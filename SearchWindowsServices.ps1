@@ -1,43 +1,43 @@
-# ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¦ã‚‚ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’åœæ­¢ã•ã›ãªã„
+# ƒGƒ‰[‚ª”­¶‚µ‚Ä‚àƒXƒNƒŠƒvƒg‚ğ’â~‚³‚¹‚È‚¢
 $ErrorActionPreference = "Continue"
 
-# ã‚µãƒ¼ãƒ“ã‚¹æƒ…å ±ã‚’å–å¾—
+# ƒT[ƒrƒXî•ñ‚ğæ“¾
 $services = Get-Service | Select-Object Status, Name, DisplayName
 
-# æ¤œç´¢ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥åŠ›
-$searchWord = (Read-Host "æ¤œç´¢ã—ãŸã„ã‚µãƒ¼ãƒ“ã‚¹åã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ (ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰å¯)").ToLower()
+# ŒŸõƒ[ƒh‚ğ“ü—Í
+$searchWord = (Read-Host "ŒŸõ‚µ‚½‚¢ƒT[ƒrƒX–¼‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢ (ƒƒCƒ‹ƒhƒJ[ƒh‰Â)").ToLower()
 
-# æ¤œç´¢çµæœã‚’å–å¾—
+# ŒŸõŒ‹‰Ê‚ğæ“¾
 $matches = $services | Where-Object { $_.Name.ToLower() -like $searchWord -or $_.DisplayName.ToLower() -like $searchWord }
 
-# æ¤œç´¢çµæœãŒãªã„å ´åˆ
+# ŒŸõŒ‹‰Ê‚ª‚È‚¢ê‡
 if (-not $matches) {
-  Write-Host "è©²å½“ã™ã‚‹ã‚µãƒ¼ãƒ“ã‚¹ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“"
-  exit
+    Write-Host "ŠY“–‚·‚éƒT[ƒrƒX‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ"
+    exit
 }
 
-# è¤‡æ•°ã®ã‚µãƒ¼ãƒ“ã‚¹ãŒãƒ’ãƒƒãƒˆã—ãŸå ´åˆã€èµ·å‹•ã™ã‚‹ã‚µãƒ¼ãƒ“ã‚¹ã‚’é¸æŠ
+# •¡”‚ÌƒT[ƒrƒX‚ªƒqƒbƒg‚µ‚½ê‡A‹N“®‚·‚éƒT[ƒrƒX‚ğ‘I‘ğ
 if ($matches.Count -gt 1) {
-  Write-Host "è¤‡æ•°ã®ã‚µãƒ¼ãƒ“ã‚¹ãŒãƒ’ãƒƒãƒˆã—ã¾ã—ãŸã€‚èµ·å‹•ã™ã‚‹ã‚µãƒ¼ãƒ“ã‚¹ã‚’é¸æŠã—ã¦ãã ã•ã„"
-  for ($i = 0; $i -lt $matches.Count; $i++) {
-    Write-Host "$($i+1): $($matches[$i].DisplayName)"
-  }
-  $index = Read-Host "é¸æŠã—ã¦ãã ã•ã„:" -as [int]
-  $serviceToStart = $matches[$index - 1]
+    Write-Host "•¡”‚ÌƒT[ƒrƒX‚ªƒqƒbƒg‚µ‚Ü‚µ‚½B‹N“®‚·‚éƒT[ƒrƒX‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢"
+    for ($i = 0; $i -lt $matches.Count; $i++) {
+        Write-Host "$($i + 1): $($matches[$i].DisplayName)"
+    }
+    $index = Read-Host "‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:" -as [int]
+    $serviceToStart = $matches[$index - 1]
 } else {
     $serviceToStart = $matches[0]
 }
 
-# é¸æŠã—ãŸã‚µãƒ¼ãƒ“ã‚¹ãŒåœæ­¢çŠ¶æ…‹ã®å ´åˆã«èµ·å‹•
+# ‘I‘ğ‚µ‚½ƒT[ƒrƒX‚ª’â~ó‘Ô‚Ìê‡‚É‹N“®
 if ($serviceToStart.Status -eq "Stopped") {
-		try {
-				Start-Service $serviceToStart.Name
-				Write-Host "ã‚µãƒ¼ãƒ“ã‚¹ '$($serviceToStart.DisplayName)' ãŒèµ·å‹•ã•ã‚Œã¾ã—ãŸ"
-		} catch {
-				Write-Host "ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: $($_.Exception.Message)"
-				Write-Warning "ã‚¹ã‚¿ãƒƒã‚¯ãƒˆãƒ¬ãƒ¼ã‚¹:"
-				$_.Exception.StackTrace | Out-String
-		}
+    try {
+		    Start-Service $serviceToStart.Name
+		    Write-Host "ƒT[ƒrƒX '$($serviceToStart.DisplayName)' ‚ª‹N“®‚³‚ê‚Ü‚µ‚½"
+    } catch {
+		    Write-Host "ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: $($_.Exception.Message)"
+		    Write-Warning "ƒXƒ^ƒbƒNƒgƒŒ[ƒX:"
+		    $_.Exception.StackTrace | Out-String
+}
 } else {
-		Write-Host "ã‚µãƒ¼ãƒ“ã‚¹ '$($serviceToStart.DisplayName)' ã¯æ—¢ã«èµ·å‹•ã—ã¦ã„ã¾ã™"
+    Write-Host "ƒT[ƒrƒX '$($serviceToStart.DisplayName)' ‚ÍŠù‚É‹N“®‚µ‚Ä‚¢‚Ü‚·"
 }
