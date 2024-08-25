@@ -9,7 +9,7 @@ $ErrorActionPreference = "Continue"
 $services = Get-Service | Select-Object Status, Name, DisplayName
 
 # 検索ワードを入力
-$searchWord = (Read-Host "検索したいWindowsサービス名を入力してください (<検索キーワード>*で部分一致検索)").ToLower()
+$searchWord = (Read-Host "検索したいWindowsサービス名を入力してください (*<検索キーワード>*で部分一致検索)").ToLower()
 
 # 検索結果を取得
 $matches = $services | Where-Object { $_.Name.ToLower() -like $searchWord -or $_.DisplayName.ToLower() -like $searchWord }
@@ -36,10 +36,11 @@ if ($matches.Count -gt 1) {
 if ($serviceToStart.Status -eq "Stopped") {
     try {
         # Windowsサービスを起動するかどうか確認
+        Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' の稼働ステータスは'$($serviceToStart.Status)'です"
         Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' を起動しますか？"
         $YesOrNo = (Read-Host "(Yes / No)").ToLower()
 
-        # 'Yes'が入力された時の判定を行う
+        # 'Yes'が入力された時の処理
         if ($YesOrNo.ToLower() -like "*Yes*") {
             Start-Service $serviceToStart.Name
             Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' が起動されました"
@@ -59,10 +60,11 @@ if ($serviceToStart.Status -eq "Stopped") {
 if ($serviceToStart.Status -eq "Running") {
     try {
         # Windowsサービスを停止するかどうか確認
+        Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' の稼働ステータスは'$($serviceToStart.Status)'です"
         Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' を停止しますか？"
         $YesOrNo = (Read-Host "(Yes / No)").ToLower()
 
-        # 'Yes'が入力された時の判定を行う
+        # 'Yes'が入力された時の処理
         if ($YesOrNo.ToLower() -like "*Yes*") {
             Start-Service $serviceToStart.Name
             Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' が停止されました"
