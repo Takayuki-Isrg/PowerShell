@@ -46,6 +46,7 @@ if ($serviceToStart.Status -eq "Stopped") {
             Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' が起動されました"
         } else {
             Write-Host "ツールを終了します"
+            exit
         }
     } catch {
         Write-Host "エラーが発生しました: $($_.Exception.Message)"
@@ -70,6 +71,7 @@ if ($serviceToStart.Status -eq "Running") {
             Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' が停止されました"
         } else {
             Write-Host "ツールを終了します"
+            exit
         }
     } catch {
         Write-Host "エラーが発生しました: $($_.Exception.Message)"
