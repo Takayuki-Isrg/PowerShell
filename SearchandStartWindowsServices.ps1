@@ -27,26 +27,26 @@ if ($matches.Count -gt 1) {
         Write-Host "$($i + 1): $($matches[$i].DisplayName)"
     }
     $index = [int](Read-Host "選択してください")
-    $serviceToStart = $matches[$index - 1]
+    $serviceToStartOrStop = $matches[$index - 1]
 } else {
-    $serviceToStart = $matches[0]
+    $serviceToStartOrStop = $matches[0]
 }
 
 # 停止状態のWindowsサービスを起動する
-if ($serviceToStart.Status -eq "Stopped") {
+if ($serviceToStartOrStop.Status -eq "Stopped") {
     try {
         # Windowsサービスを起動するかどうか確認
-        Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' の稼働ステータスは'$($serviceToStart.Status)'です"
-        Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' を起動しますか？"
+        Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' の稼働ステータスは'$($serviceToStartOrStop.Status)'です" # 2024/08/25追記
+        Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' を起動しますか？"
         $YesOrNo = (Read-Host "(Yes / No)").ToLower()
 
         # 'Yes'が入力された時の処理
         if ($YesOrNo.ToLower() -like "*Yes*") {
-            Start-Service $serviceToStart.Name
-            Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' が起動されました"
+            Start-Service $serviceToStartOrStop.Name
+            Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' が起動されました"
         } else {
             Write-Host "ツールを終了します"
-            exit
+            exit # 2024/08/25追記
         }
     } catch {
         Write-Host "エラーが発生しました: $($_.Exception.Message)"
@@ -54,30 +54,47 @@ if ($serviceToStart.Status -eq "Stopped") {
         $_.Exception.StackTrace | Out-String
     }
 } else {
-    Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' は既に起動しています"
+    Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' は既に起動しています"
 }
 
-# 起動状態のWindowsサービスを停止する
-if ($serviceToStart.Status -eq "Running") {
+# 起動状態のWindowsサービスを停止または再起動する
+if ($serviceToStartOrStop.Status -eq "Running") {
     try {
-        # Windowsサービスを停止するかどうか確認
-        Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' の稼働ステータスは'$($serviceToStart.Status)'です"
-        Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' を停止しますか？"
-        $YesOrNo = (Read-Host "(Yes / No)").ToLower()
+        ### start : Fixed on 2024-08-26 ###
+        # Windowsサービスを停止または再起動するかどうか確認
+        Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' の稼働ステータスは '$($serviceToStartOrStop.Status)' です。停止または再起動しますか？"
+        Write-Host "1: 停止"
+        Write-Host "2: 再起動"
+        Write-Host "3: 終了"
+        $choice = Read-Host "選択してください（1, 2, 3）"
 
-        # 'Yes'が入力された時の処理
-        if ($YesOrNo.ToLower() -like "*Yes*") {
-            Start-Service $serviceToStart.Name
-            Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' が停止されました"
-        } else {
-            Write-Host "ツールを終了します"
-            exit
+        switch ($choice) {
+            1 {
+                Stop-Service $serviceToStartOrStop.Name
+                Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' が停止されました"
+            }
+            2 {
+                Restart-Service $serviceToStartOrStop.Name
+                Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' が再起動されました"
+            }
+            3 {
+                Write-Host "ツールを終了します"
+                exit
+            }
+            default {
+                Write-Host "無効な選択です。ツールを終了します"
+                exit
+            }
         }
+
     } catch {
         Write-Host "エラーが発生しました: $($_.Exception.Message)"
         Write-Warning "スタックトレース:"
         $_.Exception.StackTrace | Out-String
     }
 } else {
-    Write-Host "Windowsサービス '$($serviceToStart.DisplayName)' は既に停止しています"
+    Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' は既に停止しています"
+    Write-Host "ツールを終了します"
+    exit
+### end : Fixed on 2024-08-26 ###
 }
