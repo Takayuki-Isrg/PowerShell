@@ -113,7 +113,7 @@ do {
             $_.Exception.StackTrace | Out-String
         }
     } else {
-        # TODO : 115行目の文言の修正が必要
+        # TODO : 117行目の文言の修正が必要
         Write-Host "無効な選択です。ツールを終了します"
         exit
     ### end : Fixed on 2024-08-26 ###
