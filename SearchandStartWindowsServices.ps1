@@ -89,7 +89,7 @@ do {
             $_.Exception.StackTrace | Out-String
         }
     } else {
-        Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' は既に停止しています"
+        Write-Host "Windowsサービス '$($serviceToStartOrStop.DisplayName)' 起動／停止／再起動が完了しました"
     }
 
     # 続けて検索するかの確認
