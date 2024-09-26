@@ -17,13 +17,17 @@ do {
     # 検索結果を取得
     $matches = $services | Where-Object { $_.Name.ToLower() -like "*$searchWord*" -or $_.DisplayName.ToLower() -like "*$searchWord*" }
 
-    # 検索結果がヒットしない場合の処理
+    # 検索結果がヒットしない場合、再度検索するか確認
     if (-not $matches) {
-        Write-Host "該当するWindowsサービスが見つかりません"
+        Write-Host "該当するWindowsサービスが見つかりません。再度検索しますか？ (Yes/No)"
+        $confirm = (Read-Host "選択してください (Yes / No)").ToLower()
+        if ($confirm -ne "yes") {
+            break
+        }
         continue
     }
 
-    # TODO : スタートアップの種類を変更する
+    # スタートアップの種別変更は別ファイルで行う
     # 複数のWindowsサービスがヒットした場合、起動するWindowsサービスを選択
     if ($matches.Count -gt 1) {
         Write-Host "複数のWindowsサービスがヒットしました。起動するWindowsサービスを選択してください"
